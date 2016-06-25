@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Sample1</string>
+    <string name="action_settings">Settings</string>
+    <string name="back">Go Back</string>
+    <string name="clickme">Click Me!!</string>
+    <string-array name="lv_cocktaillist">
+        <item>ホワイトレディー</item>
+        <item>バラライカ</item>
+        <item>XYZ</item>
+        <item>ニューヨーク</item>
+        <item>マンハッタン</item>
+        <item>ミシシッピミュール</item>
+        <item>ブルーハワイ</item>
+        <item>ホワイトレディー</item>
+        <item>バラライカ</item>
+        <item>XYZ</item>
+        <item>ニューヨーク</item>
+        <item>マンハッタン</item>
+        <item>ミシシッピミュール</item>
+        <item>ブルーハワイ</item>
+        <item>ホワイトレディー</item>
+        <item>バラライカ</item>
+        <item>XYZ</item>
+        <item>ニューヨーク</item>
+        <item>マンハッタン</item>
+        <item>ミシシッピミュール</item>
+        <item>ブルーハワイ</item>
+    </string-array>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="btnPlay">Play Music</string>
+    <string name="btnStop">Stop Music</string>
+</resources>
