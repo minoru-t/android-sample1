@@ -3,7 +3,6 @@ package com.example.minoru.sample1;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,15 +11,19 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import java.util.List;
+import com.example.minoru.sample1.models.fs.FMusic;
+import com.example.minoru.sample1.services.MusicService;
+import com.example.minoru.sample1.services.VideoService;
 
 public class MainActivity extends AppCompatActivity {
+
+    MusicService musicService;
+    VideoService videoService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        musicService = MusicService.getInstance(this);
+        videoService = VideoService.getInstance(this);
+        Uri musicUri = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.music_13);
+        musicService.setDataSource(musicUri);
         final OnClicks onclicks = new OnClicks();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -51,21 +58,22 @@ public class MainActivity extends AppCompatActivity {
                 onclicks.btnPlay(view);
             }
         });
-        findViewById(R.id.btnStop).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onclicks.btnStop(view);
-            }
-        });
         // 動画を再生する
         // thanks sample files.
         // @see http://www.sample-videos.com/
         VideoView videoView = (VideoView)findViewById(R.id.videoView);
         // URL指定の場合※「INTERNET」パーミッションが必要
 //        videoView.setVideoURI(Uri.parse("http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_5mb.mp4"));
-        videoView.setVideoURI(Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.samplevideo_720x480_2mb));
+        Uri videoURI = Uri.parse("android.resource://" + this.getPackageName() + "/" + R.raw.samplevideo_720x480_2mb);
+        videoView.setVideoURI(videoURI);
         // 再生開始
         videoView.start();
+        videoService.setVideoURI(videoURI);
+
+        FMusic m = FMusic.getInstance();
+        m.load();
+        Log.d("test", "loaded");
+
     }
 
     private class OnClicks {
@@ -84,10 +92,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         public void btnPlay(View view) {
-            Toast.makeText(view.getContext(), "Start Music!", Toast.LENGTH_LONG).show();
-        }
-        public void btnStop(View view) {
-            Toast.makeText(view.getContext(), "Stop Music.", Toast.LENGTH_LONG).show();
+            Toast.makeText(view.getContext(), "Start MusicService!", Toast.LENGTH_LONG).show();
+            musicService.startAndPause();
+            Button btn = (Button)findViewById(R.id.btnPlay);
+            if (musicService.isPlaying()) {
+                btn.setText(R.string.btnStop);
+            }
+            else {
+                btn.setText(R.string.btnPlay);
+            }
         }
     }
 
