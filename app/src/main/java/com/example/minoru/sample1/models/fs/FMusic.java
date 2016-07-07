@@ -58,7 +58,7 @@ public class FMusic {
         private String fullPath = "";
 
         //-------------------------------------------------------
-        // public fields
+        // getter methods
         //-------------------------------------------------------
 
         /** アルバム名 */
@@ -165,25 +165,64 @@ public class FMusic {
     private static FMusic instance = new FMusic();
 
     /** 曲別のリスト */
-    ArrayList<Entity> allMusic = new ArrayList<Entity>();
+    private ArrayList<Entity> allMusic = new ArrayList<Entity>();
 
     /** ジャンル一覧 */
-    ArrayList<String> genres = new ArrayList<String>();
+    private ArrayList<String> genres = new ArrayList<String>();
 
     /** ジャンル別のリスト */
-    ArrayList<ArrayList<Entity>> musicByGenre = new ArrayList<ArrayList<Entity>>();
+    private ArrayList<ArrayList<Entity>> musicByGenre = new ArrayList<ArrayList<Entity>>();
 
     /** アーティスト一覧 */
-    ArrayList<String> artists = new ArrayList<String>();
+    private ArrayList<String> artists = new ArrayList<String>();
 
     /** アーティスト別のリスト */
-    ArrayList<ArrayList<Entity>> musicByArtist = new ArrayList<ArrayList<Entity>>();
+    private ArrayList<ArrayList<Entity>> musicByArtist = new ArrayList<ArrayList<Entity>>();
 
     /** アルバム一覧 */
-    ArrayList<String> albums = new ArrayList<String>();
+    private ArrayList<String> albums = new ArrayList<String>();
 
     /** アルバム別のリスト */
-    ArrayList<ArrayList<Entity>> musicByAlbum = new ArrayList<ArrayList<Entity>>();
+    private ArrayList<ArrayList<Entity>> musicByAlbum = new ArrayList<ArrayList<Entity>>();
+
+    //-------------------------------------------------------
+    // getter methods
+    //-------------------------------------------------------
+
+    /** 曲別のリスト */
+    public ArrayList<Entity> getAllMusic() {
+        return allMusic;
+    }
+
+    /** ジャンル一覧 */
+    public ArrayList<String> getGenres() {
+        return genres;
+    }
+
+    /** ジャンル別のリスト */
+    public ArrayList<ArrayList<Entity>> getMusicByGenre() {
+        return musicByGenre;
+    }
+
+    /** アーティスト一覧 */
+    public ArrayList<String> getArtists() {
+        return artists;
+    }
+
+    /** アーティスト別のリスト */
+    public ArrayList<ArrayList<Entity>> getMusicByArtist() {
+        return musicByArtist;
+    }
+
+    /** アルバム一覧 */
+    public ArrayList<String> getAlbums() {
+        return albums;
+    }
+
+    /** アルバム別のリスト */
+    public ArrayList<ArrayList<Entity>> getMusicByAlbum() {
+        return musicByAlbum;
+    }
 
     /** プレイリスト一覧 */
 
