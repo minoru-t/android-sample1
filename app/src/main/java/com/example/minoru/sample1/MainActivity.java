@@ -20,6 +20,8 @@ import com.example.minoru.sample1.models.fs.FMusic;
 import com.example.minoru.sample1.services.MusicService;
 import com.example.minoru.sample1.services.VideoService;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     MusicService musicService;
@@ -72,7 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
         FMusic m = FMusic.getInstance();
         m.load();
-        Log.d("test", "loaded");
+        ArrayList genres = m.getGenres();
+        ArrayList artists = m.getArtists();
+        ArrayList albums = m.getAlbums();
+        Log.d("test", "loaded2");
 
     }
 

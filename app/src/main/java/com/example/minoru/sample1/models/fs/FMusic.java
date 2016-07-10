@@ -5,7 +5,11 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * 音楽ファイルモデルクラス
@@ -144,10 +148,58 @@ public class FMusic {
             this.fullPath = fullPath;
         }
 
+        /**
+         * タイトルを返す
+         *
+         * @return
+         */
+        public String toString() {
+            return this.getTitle();
+        }
+
         //-------------------------------------------------------
         // private, protected methods
         //-------------------------------------------------------
 
+    }
+
+    /**
+     * タイトルの並び替えクラス
+     * 全角、半角を無視して並び替える
+     */
+    private class TitleComparator implements Comparator<Entity> {
+
+        @Override
+        public int compare(Entity lhs, Entity rhs) {
+            String s1 = Normalizer.normalize(lhs.getTitle(), Normalizer.Form.NFKC);
+            String s2 = Normalizer.normalize(rhs.getTitle(), Normalizer.Form.NFKC);
+            return s1.compareTo(s2);
+        }
+    }
+
+    /**
+     * CDトラック番号の並び替えクラス
+     */
+    private class CdTrackNumberComparator implements Comparator<Entity> {
+
+        @Override
+        public int compare(Entity lhs, Entity rhs) {
+            return lhs.getCdTrackNumber() - rhs.getCdTrackNumber();
+        }
+    }
+
+    /**
+     * 文字列並び替えクラス
+     * 全角、半角を無視して並び替える
+     */
+    private class StringComparator implements Comparator<String> {
+
+        @Override
+        public int compare(String lhs, String rhs) {
+            String s1 = Normalizer.normalize(lhs, Normalizer.Form.NFKC);
+            String s2 = Normalizer.normalize(rhs, Normalizer.Form.NFKC);
+            return s1.compareTo(s2);
+        }
     }
 
     //-------------------------------------------------------
@@ -168,19 +220,19 @@ public class FMusic {
     private ArrayList<Entity> allMusic = new ArrayList<Entity>();
 
     /** ジャンル一覧 */
-    private ArrayList<String> genres = new ArrayList<String>();
+    private HashMap<String, Integer> genres = new HashMap<String, Integer>();
 
     /** ジャンル別のリスト */
     private ArrayList<ArrayList<Entity>> musicByGenre = new ArrayList<ArrayList<Entity>>();
 
     /** アーティスト一覧 */
-    private ArrayList<String> artists = new ArrayList<String>();
+    private HashMap<String, Integer> artists = new HashMap<String, Integer>();
 
     /** アーティスト別のリスト */
     private ArrayList<ArrayList<Entity>> musicByArtist = new ArrayList<ArrayList<Entity>>();
 
     /** アルバム一覧 */
-    private ArrayList<String> albums = new ArrayList<String>();
+    private HashMap<String, Integer> albums = new HashMap<String, Integer>();
 
     /** アルバム別のリスト */
     private ArrayList<ArrayList<Entity>> musicByAlbum = new ArrayList<ArrayList<Entity>>();
@@ -194,9 +246,16 @@ public class FMusic {
         return allMusic;
     }
 
-    /** ジャンル一覧 */
+    /**
+     * ジャンル一覧を取得する
+     * ※ジャンル名で並び替え済みのリスト
+     *
+     * @return
+     */
     public ArrayList<String> getGenres() {
-        return genres;
+        ArrayList<String> al = new ArrayList<String>(this.genres.keySet());
+        Collections.sort(al, new StringComparator());
+        return al;
     }
 
     /** ジャンル別のリスト */
@@ -204,9 +263,16 @@ public class FMusic {
         return musicByGenre;
     }
 
-    /** アーティスト一覧 */
+    /**
+     * アーティスト一覧を取得する
+     * ※アーティスト名で並び替え済みのリスト
+     *
+     * @return
+     */
     public ArrayList<String> getArtists() {
-        return artists;
+        ArrayList<String> al = new ArrayList<String>(this.artists.keySet());
+        Collections.sort(al, new StringComparator());
+        return al;
     }
 
     /** アーティスト別のリスト */
@@ -214,9 +280,16 @@ public class FMusic {
         return musicByArtist;
     }
 
-    /** アルバム一覧 */
+    /**
+     * アルバム一覧を取得する
+     * ※アルバム名で並び替え済みのリスト
+     *
+     * @return
+     */
     public ArrayList<String> getAlbums() {
-        return albums;
+        ArrayList<String> al = new ArrayList<String>(this.albums.keySet());
+        Collections.sort(al, new StringComparator());
+        return al;
     }
 
     /** アルバム別のリスト */
@@ -258,7 +331,23 @@ public class FMusic {
         // 保存先のファイルを読み込み
         this.loadFiles(this.SAVE_PATH);
 
-        // TODO: リストの並び替え処理
+        // すべての音楽の並び替え
+        Collections.sort(this.allMusic, new TitleComparator());
+
+        // ジャンル別音楽の並び替え
+        for (ArrayList<Entity> genres : this.musicByGenre) {
+            Collections.sort(genres, new TitleComparator());
+        }
+
+        // アーティスト別音楽の並び替え
+        for (ArrayList<Entity> artists : this.musicByArtist) {
+            Collections.sort(artists, new TitleComparator());
+        }
+
+        // アルバム別トラック番号での並び替え
+        for (ArrayList<Entity> albums : this.musicByAlbum) {
+            Collections.sort(albums, new CdTrackNumberComparator());
+        }
     }
 
     //-------------------------------------------------------
@@ -322,16 +411,17 @@ public class FMusic {
     private void addMusicByGenre(Entity entity) {
 
         // 対象ジャンルの要素位置を取得する
-        int index = this.genres.indexOf(entity.getGenre());
+        String genre = entity.getGenre();
+        boolean contains = this.genres.containsKey(entity.getGenre());
 
         // 存在するジャンルの場合、対象の要素にエンティティを追加する
-        if (index != -1) {
-            this.musicByGenre.get(index).add(entity);
+        if (contains) {
+            this.musicByGenre.get(this.genres.get(genre)).add(entity);
         }
         // 存在しないジャンルの場合、ジャンルを追加して、追加したジャンルの要素にエンティティを追加する
         else {
             int beforeSize = this.genres.size();
-            this.genres.add(entity.getGenre());
+            this.genres.put(genre, beforeSize);
             this.musicByGenre.add(new ArrayList<Entity>());
             this.musicByGenre.get(beforeSize).add(entity);
         }
@@ -345,16 +435,17 @@ public class FMusic {
     private void addMusicByArtist(Entity entity) {
 
         // 対象アーティストの要素位置を取得する
-        int index = this.artists.indexOf(entity.getArtist());
+        String artist = entity.getArtist();
+        boolean contains = this.artists.containsKey(artist);
 
         // 存在するアーティストの場合、対象の要素にエンティティを追加する
-        if (index != -1) {
-            this.musicByArtist.get(index).add(entity);
+        if (contains) {
+            this.musicByArtist.get(this.artists.get(artist)).add(entity);
         }
         // 存在しないアーティストの場合、アーティストを追加して、追加したアーティストの要素にエンティティを追加する
         else {
             int beforeSize = this.artists.size();
-            this.artists.add(entity.getArtist());
+            this.artists.put(artist, beforeSize);
             this.musicByArtist.add(new ArrayList<Entity>());
             this.musicByArtist.get(beforeSize).add(entity);
         }
@@ -368,16 +459,17 @@ public class FMusic {
     private void addMusicByAlbum(Entity entity) {
 
         // 対象アルバムの要素位置を取得する
-        int index = this.albums.indexOf(entity.getAlbum());
+        String album = entity.getAlbum();
+        boolean contains = this.albums.containsKey(album);
 
         // 存在するアルバムの場合、対象の要素にエンティティを追加する
-        if (index != -1) {
-            this.musicByAlbum.get(index).add(entity);
+        if (contains) {
+            this.musicByAlbum.get(this.albums.get(album)).add(entity);
         }
         // 存在しないアルバムの場合、アルバムを追加して、追加したアルバムの要素にエンティティを追加する
         else {
             int beforeSize = this.albums.size();
-            this.albums.add(entity.getAlbum());
+            this.albums.put(album, beforeSize);
             this.musicByAlbum.add(new ArrayList<Entity>());
             this.musicByAlbum.get(beforeSize).add(entity);
         }
