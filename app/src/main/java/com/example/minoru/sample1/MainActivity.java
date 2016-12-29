@@ -16,11 +16,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.atilika.kuromoji.ipadic.Token;
+import com.atilika.kuromoji.ipadic.Tokenizer;
 import com.example.minoru.sample1.models.fs.FMusic;
 import com.example.minoru.sample1.services.MusicService;
 import com.example.minoru.sample1.services.VideoService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,6 +74,12 @@ public class MainActivity extends AppCompatActivity {
         // 再生開始
         videoView.start();
         videoService.setVideoURI(videoURI);
+
+        Tokenizer tokenizer = new Tokenizer() ;
+        List<Token> tokens = tokenizer.tokenize("お寿司が食べたい。");
+        for (Token token : tokens) {
+            Log.d(getString(R.string.app_name), token.getSurface() + "\t" + token.getAllFeatures());
+        }
 
         FMusic m = FMusic.getInstance();
         m.load();
